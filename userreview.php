@@ -13,12 +13,21 @@ if ($conn->connect_error) {
 }
 echo "Connected successfully";
 
-$name=$_POST['name'];
-$review=$_POST['review'];
+function check_input($data)
+{
+  $data=htmlspecialchars($data);
+  $data=strip_tags($data);
+  $data=stripslashes($data);
+  return $data;
+}
 
-$sql="INSERT INTO user_review Values('$name','$review')";
+$name=check_input($_POST['name']);
+$review=check_input($_POST['review']);
 
-if($conn->query($sql)===TRUE)
+$sql=$conn->prepare("INSERT INTO user_review Values(?,?)");
+$sql->bind_param("ss",$name,$review);
+
+if($sql->execute()===TRUE)
 {
     $_SESSION['review']='reviewed';
     header('Location: review.php');
@@ -26,5 +35,8 @@ if($conn->query($sql)===TRUE)
 else{
     echo "error in reviewing";
 }
+
+$sql->close();
+$conn->close();
 
 ?>

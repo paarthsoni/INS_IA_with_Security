@@ -32,8 +32,10 @@ $cpassword=$_POST["cpassword"];
 
 if ($password==$cpassword)
 {
-$sql="INSERT INTO user_register Values('$username','$contact','$gender','$email','$password')";
-if ($conn->query($sql) === TRUE) {
+$sql= $conn->prepare("INSERT INTO user_register Values(?,?,?,?,?)");
+$sql->bind_param("sssss",$username,$contact,$gender,$email,$password);
+
+if ($sql->execute() === TRUE) {
 $mssg="true";
  $_SESSION['account']=$mssg;
  
@@ -48,10 +50,13 @@ $mssg="true";
 }
 else{
   
-  $_SESSION['$passmessage']='passwords do not match';
+  $_SESSION['passmessage']='passwords do not match';
   header("Location: register.php");
 
 }
+
+$sql->close();
+$conn->close();
 
 ?>
 

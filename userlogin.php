@@ -14,14 +14,19 @@ echo "Connected successfully";
 
 $username=$_POST["username"];
 $password=$_POST["password"];
-
-$sql="Select * from user_register where username='$username' and password='$password' ";
-
-$result = mysqli_query($conn, $sql);
-
-$rows=mysqli_num_rows($result);
-echo "$rows";
-if ($rows>=1)
+$sql = $conn->prepare("Select * from user_register where username=? and password=?");
+$sql->bind_param("ss", $username, $password);
+$sql->execute();
+$result = $sql->get_result(); 
+while ($row = $result->fetch_assoc()) {
+  if($row['username']==$username);
+  {
+    $flag=TRUE;
+    break;
+  }
+  
+}
+if ($flag==TRUE)
   {
       session_start();
       $_SESSION["username"]=$username;
@@ -35,5 +40,6 @@ if ($rows>=1)
    
    
   }
-
+$sql->close();
+$conn->close();
 ?>

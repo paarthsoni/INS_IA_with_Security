@@ -18,10 +18,19 @@
 
 <?php
   session_start();
-  $_SESSION['email']=$_POST["email"];
-  $_SESSION['name']=$_POST["cname"];
-  $_SESSION['howmany']=$_POST["howmany"];
-  $_SESSION['date']=$_POST["date"];
+
+  function check_input($data)
+  {
+    $data=htmlspecialchars($data);
+    $data=strip_tags($data);
+    $data=stripslashes($data);
+    return $data;
+  }
+
+  $_SESSION['emailid']=check_input($_GET["emailid"]);
+  $_SESSION['name']=check_input($_GET["cname"]);
+  $_SESSION['howmany']=check_input($_GET["howmany"]);
+  $_SESSION['date']=check_input($_GET["date"]);
 ?>
 
 <div class="wrapper">
@@ -31,7 +40,7 @@
     </div>
     <?php
     echo "Customer Name:". $_SESSION['name']."<br><br>";
-    echo "Customer Email:".  $_SESSION['email']."<br><br>";
+    echo "Customer Email:".  $_SESSION['emailid']."<br><br>";
     echo "Total Tickets:". $_SESSION['howmany']."<br><br>";
     echo "Date:". $_SESSION['date']."<br>";
 

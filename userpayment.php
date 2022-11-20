@@ -14,25 +14,32 @@ echo "Connected successfully";
 
 session_start();
 
-$email=$_SESSION['email'];
+function check_input($data)
+{
+  $data=htmlspecialchars($data);
+  $data=strip_tags($data);
+  $data=stripslashes($data);
+  return $data;
+}
+
+$email=$_SESSION['emailid'];
 $name=$_SESSION['name'];
 $howmany=$_SESSION['howmany'];
 $date=$_SESSION['date'];
 
-$cardholdername=$_POST["cardholdername"];
-$cardnumber=$_POST["cardnumber"];
-$expirydate=$_POST["expirydate"];
-$cvc=$_POST["cvc"];
+$cardholdername=check_input($_POST["cardholdername"]);
+$cardnumber=check_input($_POST["cardnumber"]);
+$expirydate=check_input($_POST["expirydate"]);
+$cvc=check_input($_POST["cvc"]);
 
-$sql="INSERT INTO user_payment (cardholder_name,card_number,expiry_date,cvc) Values('$cardholdername','$cardnumber','$expirydate','$cvc')";
-
-
-
-$sql1="INSERT INTO book_now (email,name,howmany,date) Values('$email','$name','$howmany','$date')";
+$sql= $conn->prepare("INSERT INTO user_payment (cardholder_name,card_number,expiry_date,cvc) Values(?,?,?,?)");
+$sql->bind_param("ssss",$cardholdername,$cardnumber,$expirydate,$cvc);
 
 
+$sql1=$conn->prepare("INSERT INTO book_now (email,name,howmany,date) Values(?,?,?,?)");
+$sql1->bind_param("ssss",$email,$name,$howmany,$date);
 
-if ($conn->query($sql)===TRUE && $conn->query($sql1))
+if ($sql->execute()===TRUE && $sql1->execute()===TRUE)
 {
   $_SESSION['ticket_booked']='ticket_booked';
   header('Location: index.php');
@@ -40,4 +47,8 @@ if ($conn->query($sql)===TRUE && $conn->query($sql1))
 else{
   echo "error in booking the ticket";
 }
+
+$sql->close();
+$sql1->close();
+$conn->close();
 ?>
